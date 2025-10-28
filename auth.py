@@ -39,14 +39,17 @@ def authenticate_user(email: str, password: str) -> Optional[UserResponseModel]:
     return user
 
 # Funciones para tokens
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict,
+                        expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, 
+                            SECRET_KEY, 
+                            algorithm=ALGORITHM)
     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponseModel:
@@ -56,7 +59,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponseM
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token,
+                            SECRET_KEY, 
+                            algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
@@ -69,10 +74,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponseM
 
 async def get_current_active_user(current_user: UserResponseModel = Depends(get_current_user)) -> UserResponseModel:
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Usuario Inactivo")
+        raise HTTPException(status_code=400,
+                            detail="Usuario Inactivo")
     return current_user
 
 async def get_current_admin_user(current_user: UserResponseModel = Depends(get_current_active_user)):
     if current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tiene permisos suficientes.")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="No tiene permisos suficientes.")
     return current_user
