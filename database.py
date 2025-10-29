@@ -1,13 +1,13 @@
 from peewee import *
 
-dbLite = SqliteDatabase('library.db')
+dbLite = SqliteDatabase('biblioteca.db')
 
 class User(Model):
-    fullname = CharField(max_length=150)
+    fullname = CharField(max_length=100)
     email = CharField(max_length=100, unique=True)
-    password = CharField(max_length=100)
+    hashed_password = CharField(max_length=255)
     is_active = BooleanField(default=True)
-    role = CharField(max_length=50, default='user') # roles: user o admin. (Por defecto es user)
+    role = CharField(default='user')  # 'user' o 'admin'
 
     class Meta:
         database = dbLite
@@ -16,26 +16,25 @@ class User(Model):
 class Book(Model):
     title = CharField(max_length=200)
     author = CharField(max_length=100)
-    published_year = IntegerField()
     description = TextField(null=True)
-    isbn = CharField(max_length=13, unique=True)
-    available_copies = IntegerField(default=1)
+    year = IntegerField(null=True)
+    isbn = CharField(max_length=20, unique=True)
+    available = BooleanField(default=True)
 
     class Meta:
         database = dbLite
         table_name = 'books'
-        
-dbLite.connect()
 
-def cargarUsuarios():
-    usuarios = []
-    for user in User.select().dicts():
-        usuarios.append(user)
-    return usuarios
+dbLite.connect()
 
 def cargarLibros():
     libros = []
-    for book in Book.select().dicts():
-        libros.append(book)
+    for libro in Book.select().dicts():
+        libros.append(libro)
     return libros
 
+def cargarUsuarios():
+    usuarios = []
+    for usuario in User.select().dicts():
+        usuarios.append(usuario)
+    return usuarios

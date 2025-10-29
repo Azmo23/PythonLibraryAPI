@@ -1,39 +1,36 @@
-from pydantic import *
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 
-#Esquemas para usuarios
+# Esquemas para Usuarios
 class UserRequestModel(BaseModel):
-    full_name: str
+    fullname: str
     email: EmailStr
     password: str
-    
+
 class UserLoginModel(BaseModel):
     email: EmailStr
     password: str
-    
-class UserResponseModel(UserRequestModel):
+
+class UserResponseModel(BaseModel):
     id: int
     fullname: str
     email: EmailStr
     is_active: bool
     role: str
-    
-#Esquemas para libros
+
+# Esquemas para Libros
 class BookRequestModel(BaseModel):
     title: str
     author: str
     description: Optional[str] = None
-    published_year: int
+    year: Optional[int] = None
     isbn: str
-    available_copies: int 
-    
+
 class BookResponseModel(BookRequestModel):
     id: int
     available: bool
-    
-#Esquemas para los tokens
-class TokenModel(BaseModel):
+
+# Esquemas para Tokens
+class TokenResponseModel(BaseModel):
     access_token: str
     token_type: str
-    
-
